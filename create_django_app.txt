@@ -1,0 +1,58 @@
+python3 -m venv venv
+source venv/bin/activate
+pip install django
+python -m django startproject braincom_project
+cd my_config
+python manage.py startapp parser_app
+
+pip install django psycopg2-binary
+  settings.py:
+  DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'postgres',
+        'USER': 'postgres',
+        'PASSWORD': 'postgres',
+        'HOST': 'localhost',
+        'PORT': '5432',
+    }
+}
+
+придумати модельку на основі данних які треба зібрати
+
+локално postgres 16 на мою убунту не ставиться
+буду запускать все у докері
+в корень docker-compose.yml
+1) cd ~/Desktop/parsers
+ docker compose -f docker-compose.yml up -d --build
+
+
+2)cd ~/Desktop/parsers/braincom_project
+source ../venv/bin/activate
+python manage.py makemigrations
+python manage.py migrate
+
+python manage.py runserver
+
+Django version 6.0.4, using settings 'my_config.settings'
+Starting development server at http://127.0.0.1:8000/
+
+остановить контейнер с базой
+cd ~/Desktop/parsers
+ docker compose -f docker-compose.yml down
+
+load_django.py
+import os
+import sys
+from pathlib import Path
+
+import django
+
+
+BASE_DIR = Path(__file__).resolve().parent.parent
+
+if str(BASE_DIR) not in sys.path:
+    sys.path.append(str(BASE_DIR))
+
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "braincom_project.settings")
+django.setup()
